@@ -46,7 +46,6 @@ namespace FrequencyWalkie
         void Awake()
         {
             Harmony harmony = new Harmony("larko.frequencywalkie");
-            
             MethodInfo originalSetLocalClientSpeaking = AccessTools.Method(typeof(WalkieTalkie), "SetLocalClientSpeaking");
             MethodInfo patchSetLocalClientSpeaking = AccessTools.Method(typeof(FrequencyWalkie), "SetLocalClientSpeaking");
             harmony.Patch(originalSetLocalClientSpeaking, new HarmonyMethod(patchSetLocalClientSpeaking));
@@ -66,7 +65,7 @@ namespace FrequencyWalkie
 
         public static void Update(WalkieTalkie __instance)
         {
-            if (!__instance.isBeingUsed) return; 
+            if (!__instance.isBeingUsed || __instance.playerHeldBy.playerClientId != GameNetworkManager.Instance.localPlayerController.playerClientId) return; 
             
             MethodInfo SendWalkieTalkieStartTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieStartTransmissionSFX");
             MethodInfo SendWalkieTalkieEndTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieEndTransmissionSFX");
