@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using BepInEx;
@@ -42,7 +43,13 @@ namespace FrequencyWalkie
         private delegate void SendWalkieTalkieStartTransmissionSFXDelegate(int playerId);
         
         private static int s_Frequency = 0;
-        
+        private static List<double> frequencyList = new List<double>
+        {1.01, 1.43, 1.67, 2.26, 2.99, 3.45, 9.34, 9.35, 9.36, 9.34, 10.0, 39.45, 10.0, 10.0, 1.01, 1, 43, 1, 67, 9.34, 
+            9.35, 9.36, 9.34, 10.0, 10.0, 10.0,1.01, 1, 43, 1, 67, 9.34, 9.35, 9.36, 9.34, 10.0, 10.0, 10.0,1.01, 1, 43,
+            1, 67, 9.34, 9.35, 9.36, 9.34, 10.0, 10.0, 10.0,1.01, 1, 43, 1, 67, 9.34, 9.35, 9.36, 9.34, 10.0, 10.0, 10.0,
+            1.01, 1, 43, 1, 67, 9.34, 9.35, 9.36, 9.34, 10.0, 10.0, 10.0,1.01, 1, 43, 1, 67, 9.34, 9.35, 9.36, 9.34, 10.0,
+            10.0, 10.0,1.01, 1, 43, 1, 67, 9.34, 9.35, 9.36, 9.34, 10.0, 10.0, 10.0, 1.01, 1, 43, 1, 67, 9.34, 9.35, 9.36, 
+            9.34, 10.0, 10.0, 10.0,1.01, 1, 43, 1, 67, 9.34, 9.35, 9.36, 9.34, 10.0, 10.0, 10.0};
         void Awake()
         {
             Harmony harmony = new Harmony("larko.frequencywalkie");
@@ -70,26 +77,26 @@ namespace FrequencyWalkie
             MethodInfo SendWalkieTalkieStartTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieStartTransmissionSFX");
             MethodInfo SendWalkieTalkieEndTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieEndTransmissionSFX");
 
-            if (UnityInput.Current.GetKeyUp(KeyCode.E))
+            if (UnityInput.Current.GetKeyUp(KeyCode.F))
             {
                 s_Frequency--;
                 if (s_Frequency < 0)
                 {
-                    s_Frequency = 100;
+                    s_Frequency = 99;
                 }
                 
                 SendWalkieTalkieEndTransmissionSFX.Invoke(__instance, new object[] {(int)__instance.playerHeldBy.playerClientId});
-                HUDManager.Instance.DisplayTip("Walkie Talkie", "Frequency set to " + s_Frequency + ".");
+                HUDManager.Instance.DisplayTip("Walkie Talkie", "Frequency set to " + frequencyList[s_Frequency] + ".");
             } else if (UnityInput.Current.GetKeyUp(KeyCode.R))
             {
                 s_Frequency++;
-                if (s_Frequency > 100)
+                if (s_Frequency > 99)
                 {
                     s_Frequency = 0;
                 }
                 
                 SendWalkieTalkieStartTransmissionSFX.Invoke(__instance, new object[] {(int)__instance.playerHeldBy.playerClientId});
-                HUDManager.Instance.DisplayTip("Walkie Talkie", "Frequency set to " + s_Frequency + ".");
+                HUDManager.Instance.DisplayTip("Walkie Talkie", "Frequency set to " + frequencyList[s_Frequency] + ".");
             }
             
         }
