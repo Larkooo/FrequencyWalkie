@@ -41,7 +41,7 @@ namespace FrequencyWalkie
 
         private delegate void SendWalkieTalkieStartTransmissionSFXDelegate(int playerId);
         
-        private static int s_Frequency = 1;
+        private static int s_Frequency = 0;
         
         void Awake()
         {
@@ -69,15 +69,30 @@ namespace FrequencyWalkie
             if (!__instance.isBeingUsed) return; 
             
             MethodInfo SendWalkieTalkieStartTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieStartTransmissionSFX");
+            MethodInfo SendWalkieTalkieEndTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieEndTransmissionSFX");
+
             if (UnityInput.Current.GetKeyUp(KeyCode.E))
             {
                 s_Frequency--;
+                if (s_Frequency < 0)
+                {
+                    s_Frequency = 100;
+                }
+                
+                SendWalkieTalkieEndTransmissionSFX.Invoke(__instance, new object[] {(int)__instance.playerHeldBy.playerClientId});
+                HUDManager.Instance.DisplayTip("Walkie Talkie", "Frequency set to " + s_Frequency + ".");
             } else if (UnityInput.Current.GetKeyUp(KeyCode.R))
             {
                 s_Frequency++;
+                if (s_Frequency > 100)
+                {
+                    s_Frequency = 0;
+                }
+                
+                SendWalkieTalkieStartTransmissionSFX.Invoke(__instance, new object[] {(int)__instance.playerHeldBy.playerClientId});
+                HUDManager.Instance.DisplayTip("Walkie Talkie", "Frequency set to " + s_Frequency + ".");
             }
-            HUDManager.Instance.DisplayTip("Walkie Talkie", "Frequency set to " + s_Frequency + ".");
-            SendWalkieTalkieStartTransmissionSFX.Invoke(__instance, new object[] {__instance.OwnerClientId});
+            
         }
 
         public static bool SetLocalClientSpeaking(WalkieTalkie __instance, PlayerControllerB ___previousPlayerHeldBy, bool speaking)
