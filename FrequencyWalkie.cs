@@ -66,7 +66,7 @@ namespace FrequencyWalkie
             MethodInfo patchUpdate = AccessTools.Method(typeof(FrequencyWalkie), "Update");
             harmony.Patch(originUpdate, null, new HarmonyMethod(patchUpdate));
             
-            //MethodInfo originEquipItem = AccessTools.Method(typeof(GrabbableObject), "EquipItem");
+            //MethodInfo originEquipItem = AccessTools.Method(typeof(WalkieTalkie), "EquipItem");
             //MethodInfo patchEquipItem = AccessTools.Method(typeof(FrequencyWalkie), "EquipItem");
             //harmony.Patch(originEquipItem, null, new HarmonyMethod(patchEquipItem));
             
@@ -74,13 +74,19 @@ namespace FrequencyWalkie
         
         public static void Update(WalkieTalkie __instance)
         {
-            if (!__instance.isBeingUsed || __instance.playerHeldBy.playerClientId != GameNetworkManager.Instance.localPlayerController.playerClientId) return;
+            var player = GameNetworkManager.Instance.localPlayerController;
+            if (!__instance.isBeingUsed || __instance.playerHeldBy.playerClientId != player.playerClientId) return;
+            
             MethodInfo SendWalkieTalkieStartTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieStartTransmissionSFX");
             MethodInfo SendWalkieTalkieEndTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieEndTransmissionSFX");
             
-            HUDManager.Instance.DisplayStatusEffect("Current frequency is " + _frequencyList[s_Frequency] + "MHz.");
+            var isCurrentWalkie = ((player.ItemSlots[player.currentItemSlot]).GetType() == __instance.GetType());
+            if (isCurrentWalkie)
+            {
+                HUDManager.Instance.DisplayStatusEffect("Current frequency is " + _frequencyList[s_Frequency] + "MHz.");
+            }
             
-            if (UnityInput.Current.GetKeyUp(KeyCode.DownArrow))
+            if (UnityInput.Current.GetKeyUp(KeyCode.DownArrow) && isCurrentWalkie)
             {
                 s_Frequency--;
                 if (s_Frequency < 0)
@@ -90,7 +96,7 @@ namespace FrequencyWalkie
                 
                 SendWalkieTalkieEndTransmissionSFX.Invoke(__instance, new object[] {(int)__instance.playerHeldBy.playerClientId});
                 HUDManager.Instance.DisplayTip("Walkie Talkie", "Frequency set to " + _frequencyList[s_Frequency] + "MHz.");
-            } else if (UnityInput.Current.GetKeyUp(KeyCode.UpArrow))
+            } else if (UnityInput.Current.GetKeyUp(KeyCode.UpArrow) && isCurrentWalkie)
             {
                 s_Frequency++;
                 if (s_Frequency > 24)
