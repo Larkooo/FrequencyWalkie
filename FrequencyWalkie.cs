@@ -23,7 +23,10 @@ namespace FrequencyWalkie
     [BepInPlugin("larko.frequencywalkie", "FrequencyWalkie", "1.1.0")]
     public class FrequencyWalkie : BaseUnityPlugin
     {
-        public static int frequencyIndex = 0;
+        // A hash map of all walkie talkies and their selected frequency
+        // the key is the walkie talkie's gameobject instance ID 
+        // the value is the frequency index
+        public static Dictionary<int, int> walkieTalkieFrequencies = new Dictionary<int, int>();
         public static List<string> frequencies = new List<string> {"BR.d", "18.3", "19.5", "21.7", "23.3", "25.0", "27.9", "29.3", "31.3", "33.6", "35.4", "36.8", "37.7", "38.6", "39.4",
             "40.2", "42.3", "43.8", "44.5", "45.1", "46.9", "47.2", "47.8", "48.1", "48.5"};
 
@@ -54,10 +57,10 @@ namespace FrequencyWalkie
             var canvas = walkie.gameObject.GetComponent<Canvas>();
 
             var text = canvas.GetComponentInChildren<Text>();
-            text.text = $"<b><size=40>{frequencies[frequencyIndex]}</size><i><size=30>MHz</size></i></b>";
+            text.text = $"<b><size=40>{frequencies[walkieTalkieFrequencies[walkie.GetInstanceID()]]}</size><i><size=30>MHz</size></i></b>";
             
             // we show the broadcast icon if frequency is 0 (broad)
-            if (frequencyIndex == 0)
+            if (walkieTalkieFrequencies[walkie.GetInstanceID()] == 0)
             {
                 canvas.transform.GetChild(canvas.transform.childCount - 4).gameObject.SetActive(true);
             }
@@ -134,7 +137,7 @@ namespace FrequencyWalkie
             if (rpc_exec_stage != (int)RpcExecStage.Client || !networkManager.IsClient && !networkManager.IsHost)
                 return;
 
-            if (FrequencyWalkie.frequencyIndex != frequency && frequency != 0)
+            if (walkieTalkieFrequencies[instance.GetInstanceID()] != frequency && frequency != 0)
             {
                 return;
             }
