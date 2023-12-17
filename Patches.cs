@@ -36,11 +36,37 @@ namespace FrequencyWalkie
             MethodInfo patchSwitchWalkieTalkieOn = AccessTools.Method(typeof(Patches), "WalkieTalkie_SwitchWalkieTalkieOn");
             harmony.Patch(originSwitchWalkieTalkieOn, null, new HarmonyMethod(patchSwitchWalkieTalkieOn));
             
-            // TODO: Patch walkie talkie equip func to update frequency to up to date one
-            // or store frequencies by walkie talkie instances.
+            MethodInfo originEquipItem = AccessTools.Method(typeof(WalkieTalkie), "EquipItem");
+            MethodInfo patchEquipItem = AccessTools.Method(typeof(Patches), "WalkieTalkie_EquipItem");
+            harmony.Patch(originEquipItem, null, new HarmonyMethod(patchEquipItem));
         }
         
-        public static void WalkieTalkie_Start(WalkieTalkie __instance)
+        private static void WalkieTalkie_EquipItem(WalkieTalkie __instance)
+        {
+            // Only shown once
+            HUDManager.Instance.DisplayTip("FrequencyWalkie", "Press [R] or [F] to cycle between frequencies. BR.d will broadcast to all walkie talkies.", false, true, "FW_EquipTip");
+
+            // check if another walkie talkie in our inventory && being used
+            for (int i = 0; i < __instance.playerHeldBy.ItemSlots.Length; i++)
+            {
+                if (__instance.playerHeldBy.ItemSlots[i] == __instance && __instance.isBeingUsed) {
+                    __instance.gameObject.GetComponent<Canvas>().enabled = true;
+                    continue;
+                }
+                
+                if (__instance.playerHeldBy.ItemSlots[i] == __instance)
+                    continue;
+                
+                // if we have another walkie talkie in our inventory and it's being used
+                // we disable the canvas (fixes double canvas bug)
+                if (__instance.playerHeldBy.ItemSlots[i] is WalkieTalkie walkie)
+                {
+                    walkie.gameObject.GetComponent<Canvas>().enabled = false;
+                }
+            }
+        }
+        
+        private static void WalkieTalkie_Start(WalkieTalkie __instance)
         {
             // add walkie talkie to the dictionary
             FrequencyWalkie.walkieTalkieFrequencies.Add(__instance.GetInstanceID(), 0);
@@ -150,12 +176,12 @@ namespace FrequencyWalkie
             canvas.enabled = false;
         }
         
-        public static void WalkieTalkie_SwitchWalkieTalkieOn(WalkieTalkie __instance)
+        private static void WalkieTalkie_SwitchWalkieTalkieOn(WalkieTalkie __instance)
         {
             __instance.gameObject.GetComponent<Canvas>().enabled = __instance.isBeingUsed;
         }
 
-        public static void WalkieTalkie_Update(WalkieTalkie __instance)
+        private static void WalkieTalkie_Update(WalkieTalkie __instance)
         {
             var player = GameNetworkManager.Instance.localPlayerController;
             var isCurrentItemWalkie = player.ItemSlots[player.currentItemSlot] == __instance;
@@ -183,7 +209,7 @@ namespace FrequencyWalkie
             }
         }
         
-        public static bool WalkieTalkie_SetLocalClientSpeaking(WalkieTalkie __instance, PlayerControllerB ___previousPlayerHeldBy, bool speaking)
+        private static bool WalkieTalkie_SetLocalClientSpeaking(WalkieTalkie __instance, PlayerControllerB ___previousPlayerHeldBy, bool speaking)
         {
             if (___previousPlayerHeldBy.speakingToWalkieTalkie != speaking)
             {
