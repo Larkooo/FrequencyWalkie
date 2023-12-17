@@ -42,6 +42,9 @@ namespace FrequencyWalkie
         
         public static void WalkieTalkie_Start(WalkieTalkie __instance)
         {
+            // add walkie talkie to the dictionary
+            FrequencyWalkie.walkieTalkieFrequencies.Add(__instance.GetInstanceID(), 0);
+            
             // add control tip to the walkie talkie
             __instance.itemProperties.toolTips = __instance.itemProperties.toolTips.AddToArray(FrequencyWalkie.tooltip);
             
@@ -136,7 +139,7 @@ namespace FrequencyWalkie
             
             
             var textComponent = text.AddComponent<Text>();
-            textComponent.text = $"<b><size=40>{FrequencyWalkie.frequencies[FrequencyWalkie.frequencyIndex]}</size><i><size=30>MHz</size></i></b>";
+            textComponent.text = $"<b><size=40>{FrequencyWalkie.frequencies[FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()]]}</size><i><size=30>MHz</size></i></b>";
             textComponent.font = Assets.GetResource<Font>("3270-Regular");;
             textComponent.color = Color.black;
             textComponent.fontSize = 40;
@@ -163,17 +166,17 @@ namespace FrequencyWalkie
             MethodInfo SendWalkieTalkieStartTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieStartTransmissionSFX");
             if (UnityInput.Current.GetKeyUp(KeyCode.F))
             {
-                FrequencyWalkie.frequencyIndex--;
-                if (FrequencyWalkie.frequencyIndex < 0)
+                FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()]--;
+                if (FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()] < 0)
                 {
-                    FrequencyWalkie.frequencyIndex = FrequencyWalkie.frequencies.Count - 1;
+                    FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()] = FrequencyWalkie.frequencies.Count - 1;
                 }
                 
                 SendWalkieTalkieStartTransmissionSFX.Invoke(__instance, new object[] {(int)__instance.playerHeldBy.playerClientId});
                 __instance.StartCoroutine(FrequencyWalkie.OnFrequencyChanged(__instance, false));
             } else if (UnityInput.Current.GetKeyUp(KeyCode.R))
             {
-                FrequencyWalkie.frequencyIndex = (FrequencyWalkie.frequencyIndex + 1) % FrequencyWalkie.frequencies.Count;
+                FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()] = (FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()] + 1) % FrequencyWalkie.frequencies.Count;
                 
                 SendWalkieTalkieStartTransmissionSFX.Invoke(__instance, new object[] {(int)__instance.playerHeldBy.playerClientId});
                 __instance.StartCoroutine(FrequencyWalkie.OnFrequencyChanged(__instance, true));
@@ -187,7 +190,7 @@ namespace FrequencyWalkie
                 ___previousPlayerHeldBy.speakingToWalkieTalkie = speaking;
                 if (speaking)
                 {
-                    FrequencyWalkie.SetPlayerSpeakingOnWalkieTalkieServerRpc(__instance, (int)___previousPlayerHeldBy.playerClientId, FrequencyWalkie.frequencyIndex);
+                    FrequencyWalkie.SetPlayerSpeakingOnWalkieTalkieServerRpc(__instance, (int)___previousPlayerHeldBy.playerClientId, FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()]);
                     return false;
                 }
                 __instance.UnsetPlayerSpeakingOnWalkieTalkieServerRpc((int)___previousPlayerHeldBy.playerClientId);
