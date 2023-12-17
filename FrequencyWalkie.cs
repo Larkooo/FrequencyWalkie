@@ -20,7 +20,7 @@ namespace FrequencyWalkie
         Client,
     }
     
-    [BepInPlugin("larko.frequencywalkie", "FrequencyWalkie", "1.1.0")]
+    [BepInPlugin("larko.frequencywalkie", "FrequencyWalkie", "1.2.0")]
     public class FrequencyWalkie : BaseUnityPlugin
     {
         // A hash map of all walkie talkies and their selected frequency
