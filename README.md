@@ -16,11 +16,11 @@ This mod enhances the functionality of walkie-talkies in Lethal Company by enabl
 
 ### Steps
 
-1. **Download**: Obtain the latest release of FrequencyWalkie from the [Releases](link_to_releases) page.
+1. **Download**: Obtain the latest release of FrequencyWalkie from the [Releases](https://github.com/Larkooo/FrequencyWalkie/releases) page.
 
 2. **Installation**:
-   - Extract the contents of the downloaded ZIP file into the `LethalCompany/BepInEx/plugins` folder.
-   - Ensure that the mod files are correctly placed within the BepInEx plugin directory.
+   - Extract the contents of the downloaded ZIP file or DLL into the `Lethal Company/BepInEx/plugins` folder.
+   - Ensure that the mod files (.dll) are correctly placed within the BepInEx plugin directory.
 
 3. **Launch the Game**: Start Lethal Company via your preferred method.
 
@@ -35,7 +35,7 @@ This mod enhances the functionality of walkie-talkies in Lethal Company by enabl
 
 ## Contributing
 
-Contributions are encouraged! Report bugs or suggest improvements by [creating an issue](link_to_issues) or forking the repository and submitting a pull request.
+Contributions are encouraged! Report bugs or suggest improvements by [creating an issue](https://github.com/Larkooo/FrequencyWalkie/issues) or forking the repository and submitting a pull request.
 
 ## Credits
 
@@ -43,4 +43,4 @@ FrequencyWalkie is a mod developed and maintained by [Larko](https://github.com/
 
 ## License
 
-This project is licensed under the [MIT License](link_to_license).
+This project is licensed under the [MIT License](LICENSE).
