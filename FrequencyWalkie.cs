@@ -20,7 +20,7 @@ namespace FrequencyWalkie
         Client,
     }
     
-    [BepInPlugin("larko.frequencywalkie", "FrequencyWalkie", "1.0.0")]
+    [BepInPlugin("larko.frequencywalkie", "FrequencyWalkie", "1.1.0")]
     public class FrequencyWalkie : BaseUnityPlugin
     {
         public static int frequencyIndex = 0;
