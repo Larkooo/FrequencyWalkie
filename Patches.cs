@@ -39,31 +39,22 @@ namespace FrequencyWalkie
             MethodInfo originEquipItem = AccessTools.Method(typeof(WalkieTalkie), "EquipItem");
             MethodInfo patchEquipItem = AccessTools.Method(typeof(Patches), "WalkieTalkie_EquipItem");
             harmony.Patch(originEquipItem, null, new HarmonyMethod(patchEquipItem));
+            
+            MethodInfo originPocketItem = AccessTools.Method(typeof(WalkieTalkie), "PocketItem");
+            MethodInfo patchPocketItem = AccessTools.Method(typeof(Patches), "WalkieTalkie_PocketItem");
+            harmony.Patch(originPocketItem, null, new HarmonyMethod(patchPocketItem));
         }
         
         private static void WalkieTalkie_EquipItem(WalkieTalkie __instance)
         {
-            // Only shown once
-            HUDManager.Instance.DisplayTip("FrequencyWalkie", "Press [R] or [F] to cycle between frequencies. BR.d will broadcast to all walkie talkies.", false, true, "FW_EquipTip");
-
-            // check if another walkie talkie in our inventory && being used
-            for (int i = 0; i < __instance.playerHeldBy.ItemSlots.Length; i++)
-            {
-                if (__instance.playerHeldBy.ItemSlots[i] == __instance && __instance.isBeingUsed) {
-                    __instance.gameObject.GetComponent<Canvas>().enabled = true;
-                    continue;
-                }
-                
-                if (__instance.playerHeldBy.ItemSlots[i] == __instance)
-                    continue;
-                
-                // if we have another walkie talkie in our inventory and it's being used
-                // we disable the canvas (fixes double canvas bug)
-                if (__instance.playerHeldBy.ItemSlots[i] is WalkieTalkie walkie)
-                {
-                    walkie.gameObject.GetComponent<Canvas>().enabled = false;
-                }
-            }
+            // enable canvas if walkie talkie is on
+            if (__instance.isBeingUsed)
+                __instance.gameObject.GetComponent<Canvas>().enabled = true;
+        }
+        
+        private static void WalkieTalkie_PocketItem(WalkieTalkie __instance)
+        {
+            __instance.gameObject.GetComponent<Canvas>().enabled = false;
         }
         
         private static void WalkieTalkie_Start(WalkieTalkie __instance)
@@ -173,12 +164,18 @@ namespace FrequencyWalkie
             
             text.transform.localScale = new Vector3(0.015f, 0.01f, 0.01f);
             
+            // disable canvas by default
+            // will be enabled when walkie talkie is on
             canvas.enabled = false;
+            __instance.walkieTalkieLight.intensity /= 3;
         }
         
         private static void WalkieTalkie_SwitchWalkieTalkieOn(WalkieTalkie __instance)
         {
             __instance.gameObject.GetComponent<Canvas>().enabled = __instance.isBeingUsed;
+            
+            if (__instance.playerHeldBy == GameNetworkManager.Instance.localPlayerController && __instance.isBeingUsed)
+                HUDManager.Instance.DisplayTip("FrequencyWalkie", "Press [R] or [F] to cycle between frequencies. BR.d will broadcast to all walkie talkies.", false, true, "FW_UseTip");
         }
 
         private static void WalkieTalkie_Update(WalkieTalkie __instance)
@@ -189,7 +186,6 @@ namespace FrequencyWalkie
             // and walkie talkie has to be turned on
             if (!__instance.isBeingUsed || !isCurrentItemWalkie) return;
             
-            MethodInfo SendWalkieTalkieStartTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieStartTransmissionSFX");
             if (UnityInput.Current.GetKeyUp(KeyCode.F))
             {
                 FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()]--;
@@ -198,13 +194,11 @@ namespace FrequencyWalkie
                     FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()] = FrequencyWalkie.frequencies.Count - 1;
                 }
                 
-                SendWalkieTalkieStartTransmissionSFX.Invoke(__instance, new object[] {(int)__instance.playerHeldBy.playerClientId});
                 __instance.StartCoroutine(FrequencyWalkie.OnFrequencyChanged(__instance, false));
             } else if (UnityInput.Current.GetKeyUp(KeyCode.R))
             {
                 FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()] = (FrequencyWalkie.walkieTalkieFrequencies[__instance.GetInstanceID()] + 1) % FrequencyWalkie.frequencies.Count;
                 
-                SendWalkieTalkieStartTransmissionSFX.Invoke(__instance, new object[] {(int)__instance.playerHeldBy.playerClientId});
                 __instance.StartCoroutine(FrequencyWalkie.OnFrequencyChanged(__instance, true));
             }
         }

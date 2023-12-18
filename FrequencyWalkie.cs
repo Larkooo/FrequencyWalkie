@@ -59,6 +59,9 @@ namespace FrequencyWalkie
             var text = canvas.GetComponentInChildren<Text>();
             text.text = $"<b><size=40>{frequencies[walkieTalkieFrequencies[walkie.GetInstanceID()]]}</size><i><size=30>MHz</size></i></b>";
             
+            MethodInfo SendWalkieTalkieStartTransmissionSFX = AccessTools.Method(typeof(WalkieTalkie), "SendWalkieTalkieStartTransmissionSFX");
+            SendWalkieTalkieStartTransmissionSFX.Invoke(walkie, new object[] {(int)walkie.playerHeldBy.playerClientId});
+            
             // we show the broadcast icon if frequency is 0 (broad)
             if (walkieTalkieFrequencies[walkie.GetInstanceID()] == 0)
             {
@@ -137,10 +140,22 @@ namespace FrequencyWalkie
             if (rpc_exec_stage != (int)RpcExecStage.Client || !networkManager.IsClient && !networkManager.IsHost)
                 return;
 
-            if (walkieTalkieFrequencies[instance.GetInstanceID()] != frequency && frequency != 0)
+            // update the frequency on the incoming walkie talkie
+            for (int i = 0; i < WalkieTalkie.allWalkieTalkies.Count; i++)
             {
-                return;
+                if ((int)WalkieTalkie.allWalkieTalkies[i].playerHeldBy.playerClientId == playerId)
+                {
+                    walkieTalkieFrequencies[WalkieTalkie.allWalkieTalkies[i].GetInstanceID()] = frequency;
+                    // update text
+                    instance.StartCoroutine(OnFrequencyChanged(WalkieTalkie.allWalkieTalkies[i], false));
+                    break;
+                }
             }
+            
+            if (walkieTalkieFrequencies[instance.GetInstanceID()] != frequency && frequency != 0)
+                return;
+            
+            
             StartOfRound.Instance.allPlayerScripts[playerId].speakingToWalkieTalkie = true;
             instance.clientIsHoldingAndSpeakingIntoThis = true;
             SendWalkieTalkieStartTransmissionSFX.Invoke(instance, new object[] {playerId});
