@@ -46,6 +46,9 @@
         <Reference Include="System.Core"/>
         <Reference Include="System.Data"/>
         <Reference Include="System.Xml"/>
+        <Reference Include="Unity.InputSystem">
+          <HintPath>..\..\Library\Application Support\CrossOver\Bottles\Steam\drive_c\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.InputSystem.dll</HintPath>
+        </Reference>
         <Reference Include="Unity.Netcode.Runtime">
             <HintPath>..\..\Library\Application Support\CrossOver\Bottles\Steam\drive_c\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
         </Reference>
@@ -57,6 +60,9 @@
         </Reference>
         <Reference Include="UnityEngine.IMGUIModule">
           <HintPath>..\..\Library\Application Support\CrossOver\Bottles\Steam\drive_c\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.InputModule">
+          <HintPath>..\..\Library\Application Support\CrossOver\Bottles\Steam\drive_c\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.InputModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.TextRenderingModule">
           <HintPath>..\..\Library\Application Support\CrossOver\Bottles\Steam\drive_c\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>

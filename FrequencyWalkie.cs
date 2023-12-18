@@ -8,6 +8,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -20,7 +21,7 @@ namespace FrequencyWalkie
         Client,
     }
     
-    [BepInPlugin("larko.frequencywalkie", "FrequencyWalkie", "1.3.0")]
+    [BepInPlugin("larko.frequencywalkie", "FrequencyWalkie", "1.3.1")]
     public class FrequencyWalkie : BaseUnityPlugin
     {
         // A hash map of all walkie talkies and their selected frequency
@@ -37,8 +38,7 @@ namespace FrequencyWalkie
             Harmony harmony = new Harmony("larko.frequencywalkie");
             Patches.ApplyPatches(harmony);
         }
-        
-        
+
         public static T GetResource<T>(string objName) where T : Object
         {
             T[] objects = Resources.FindObjectsOfTypeAll<T>();

@@ -182,6 +182,9 @@ namespace FrequencyWalkie
         {
             var player = GameNetworkManager.Instance.localPlayerController;
             var isCurrentItemWalkie = player.ItemSlots[player.currentItemSlot] == __instance;
+            // player has to be able to use the walkie talkie
+            if (player.isGrabbingObjectAnimation || player.isTypingChat || player.inTerminalMenu ||
+                player.inSpecialInteractAnimation) return;
             // player has to be holding the walkie talkie 
             // and walkie talkie has to be turned on
             if (!__instance.isBeingUsed || !isCurrentItemWalkie) return;
